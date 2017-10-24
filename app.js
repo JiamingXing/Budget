@@ -1,22 +1,31 @@
 
 //BUDGET CONTROLLER
 var budgetController = (function() {
-	//TO DO
-	//var x and function add is private
-	var x = 23;
+	
+	//use function constructor to create 
+	var Expense = function(id, description, value) {
+		this.id = id;
+		this.description = description;
+		this.value = value;
+	};
 
-	//为什么不定义成 function add(b) {}
-	var add = function(a) {
-		return x + a;
-	}
-	//closure
-	//publicTest is public
-	//budgetController is an object containing the method called publicTest
-	return {
-		publicTest : function(b) {
-			return add(b);
+	var Income = function(id, description, value) {
+		this.id = id;
+		this.description = description;
+		this.value = value;
+	};
+
+	var data = {
+		allItems : {
+			exp : [],
+			inc : []
+		},
+		totals : {
+			exp : 0,
+			inc : 0
 		}
 	}
+
 
 })();
 
