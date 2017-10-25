@@ -1,5 +1,7 @@
 
 //BUDGET CONTROLLER
+//This controller keeps tracking of all the incomes and expenses
+//and also the budget itself and later also the percentages.
 var budgetController = (function() {
 	
 	//use function constructor to create 
@@ -15,6 +17,7 @@ var budgetController = (function() {
 		this.value = value;
 	};
 
+	//this data structure is private and only accessible in this module
 	var data = {
 		allItems : {
 			exp : [],
@@ -25,6 +28,42 @@ var budgetController = (function() {
 			inc : 0
 		}
 	}
+
+	//How to avoid conflicts in our data structure
+	//how and why to pass data from one module to another
+
+	//create a public method in this module to allow other module add new item into our database
+	return {
+		addItem : function(type, des, val) {
+			var newItem, ID;
+
+			//ID = last ID + 1
+			//create new ID
+			if (data.allItems[type].length > 0) {
+				ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
+			}  else {
+				ID = 0;
+			}
+
+			//create new item based on 'inc' or 'exp' type
+			if (type === "inc") {
+				newItem = new Income(ID, des, val);
+			} else if (type === "exp") {
+				newItem = new Expense(ID, des, val);
+			}
+
+			//push it into our datastructure
+			data.allItems[type].push(newItem);
+
+			//Return the new item so other mudules can publicly access it 
+			return newItem;
+		},
+
+		test : function() {
+			console.log(data);
+		}
+
+	};
 
 
 })();
@@ -85,11 +124,12 @@ var controller = (function(budgetCtrl, UICtrl) {
 	}
 
 	var ctrlAddItem = function() {
+		var input, newItem
 		//1. get the field input data
-		var input = UICtrl.getInput();
-		console.log(input);
+		input = UICtrl.getInput();
 
 		//2. add the item to the budget controller
+		newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
 		//3. add the new item to the UI
 
