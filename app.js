@@ -96,7 +96,7 @@ var UIController = (function() {
 				//return these three properties
 				type : document.querySelector(DOMStrings.intputType).value,
 				description : document.querySelector(DOMStrings.inputDescription).value,
-				value : document.querySelector(DOMStrings.inputValue).value
+				value : parseFloat(document.querySelector(DOMStrings.inputValue).value)
 			}
 
 		},
@@ -117,6 +117,18 @@ var UIController = (function() {
 			newHtml = newHtml.replace("%value%", obj.value);
 			//3. Insert the HTML into the DOM
 			document.querySelector(element).insertAdjacentHTML("beforeend", newHtml);
+		},
+
+		clearFields : function() {
+			var fields, fieldsArr;
+			fields = document.querySelectorAll(DOMStrings.inputDescription + ", " + DOMStrings.inputValue);
+			//we can not use fields.slice() directly cause fields is not array
+			fieldsArr = Array.prototype.slice.call(fields);
+			fieldsArr.forEach(function(cur, i, arr) {
+				cur.value = "";
+			});
+
+			fieldsArr[0].focus();
 		},
 
 		getDOMStrings : function() {
@@ -147,18 +159,36 @@ var controller = (function(budgetCtrl, UICtrl) {
 		});
 	}
 
+	var updateBudget = function() {
+
+		//1. calculate the budget
+
+		//2. return the budget
+
+		//3. Display the budget
+	}
+
 	var ctrlAddItem = function() {
 		var input, newItem
 		//1. get the field input data
 		input = UICtrl.getInput();
 
-		//2. add the item to the budget controller
-		newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+		//add input prevention
+		if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
+			//2. add the item to the budget controller
+			newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
-		//3. add the new item to the UI
-		UICtrl.addListItem(newItem, input.type);
+			//3. add the new item to the UI
+			UICtrl.addListItem(newItem, input.type);
 
-		//4. calculate the budget and display the budget
+			//4.clear the fields
+			UICtrl.clearFields();
+
+			//5.calculate and update budget
+			updateBudget();
+		} else {
+			UICtrl.clearFields();
+		}
 	}
 
 	//we need a public int function so return in the IIFE
