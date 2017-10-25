@@ -17,6 +17,14 @@ var budgetController = (function() {
 		this.value = value;
 	};
 
+	var calculateTotal = function(type) {
+		var sum = 0;
+		data.allItems[type].forEach(function(cur) {
+			sum += cur.value;
+		});
+		data.totals[type] = sum;
+	}
+
 	//this data structure is private and only accessible in this module
 	var data = {
 		allItems : {
@@ -26,7 +34,9 @@ var budgetController = (function() {
 		totals : {
 			exp : 0,
 			inc : 0
-		}
+		},
+		budget : 0,
+		percentage : -1
 	}
 
 	//How to avoid conflicts in our data structure
@@ -57,6 +67,31 @@ var budgetController = (function() {
 
 			//Return the new item so other mudules can publicly access it 
 			return newItem;
+		},
+
+		calculateBudget : function() {
+			//calculate the sum of incomes and expenses
+			calculateTotal("exp");
+			calculateTotal("inc");
+
+			//calculate the budget : income - expense
+			data.budget = data.totals.inc - data.totals.exp;
+			//calculate the percentage of income we spent
+			if (data.totals.inc > 0) {
+				data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+			} else {
+				data.percentage = -1;
+			}
+
+		},
+
+		getBudget : function() {
+			return {
+				budget : data.budget,
+				totalInc : data.totals.inc,
+				totalExp : data.totals.exp,
+				percentage : data.percentage
+			};
 		},
 
 		test : function() {
@@ -162,12 +197,14 @@ var controller = (function(budgetCtrl, UICtrl) {
 	var updateBudget = function() {
 
 		//1. calculate the budget
-
+		budgetCtrl.calculateBudget();
 		//2. return the budget
-
+		var budget = budgetCtrl.getBudget();
 		//3. Display the budget
+		console.log(budget);
 	}
 
+	//event handler press 
 	var ctrlAddItem = function() {
 		var input, newItem
 		//1. get the field input data
