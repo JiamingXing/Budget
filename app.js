@@ -156,7 +156,7 @@ var UIController = (function() {
 	//to make it convenient if we change our class name later at html
 	//what we need to change in app.js is here only
 	var DOMStrings = {
-		intputType : ".add__type",
+		inputType : ".add__type",
 		inputDescription : ".add__description",
 		inputValue : ".add__value",
 		inputBtn : ".add__btn",
@@ -185,11 +185,17 @@ var UIController = (function() {
 		return (type === "exp" ? sign = "-" : sign = "+") + " " + int +  "." + dec;
 	};
 
+	var nodeListForEach = function(list, callback) {
+		for (var i = 0; i < list.length; i++) {
+			callback(list[i], i);
+		}
+	};
+
 	return {
 		getInput : function() {
 			return {
 				//return these three properties
-				type : document.querySelector(DOMStrings.intputType).value,
+				type : document.querySelector(DOMStrings.inputType).value,
 				description : document.querySelector(DOMStrings.inputDescription).value,
 				value : parseFloat(document.querySelector(DOMStrings.inputValue).value)
 			}
@@ -248,12 +254,6 @@ var UIController = (function() {
 			//node list
 			var fields = document.querySelectorAll(DOMStrings.expensesPercLabel);
 
-			var nodeListForEach = function(list, callback) {
-				for (var i = 0; i < list.length; i++) {
-					callback(list[i], i);
-				}
-			};
-
 			nodeListForEach(fields, function(current, index) {
 				if (percentages[index] > 0) {
 					current.textContent = percentages[index] + "%";
@@ -270,6 +270,19 @@ var UIController = (function() {
 			months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 			month = now.getMonth();
 			document.querySelector(DOMStrings.dateLabel).textContent = months[month] + " " + year;
+		},
+
+		changeType : function() {
+			var fields = document.querySelectorAll(
+				DOMStrings.inputType + "," +
+				DOMStrings.inputDescription + "," +
+				DOMStrings.inputValue
+			);
+			nodeListForEach(fields, function(cur) {
+				cur.classList.toggle("red-focus");
+			});
+
+			document.querySelector(DOMStrings.inputBtn).classList.toggle("red");
 		},
 
 		getDOMStrings : function() {
@@ -300,6 +313,8 @@ var controller = (function(budgetCtrl, UICtrl) {
 		});
 
 		document.querySelector(DOM.container).addEventListener("click", ctrlDeleteItem);
+
+		document.querySelector(DOM.inputType).addEventListener("change", UICtrl.changeType);
 	};
 
 	var updateBudget = function() {
